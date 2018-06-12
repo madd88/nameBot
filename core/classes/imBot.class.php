@@ -7,7 +7,7 @@ class imBot
 
     }
 
-    public function installApp(){
+    public function installApp(array $request = []){
 
         $backUrl = ($_SERVER['SERVER_PORT'] == 443 ? 'https' : 'http') . '://' . $_SERVER['SERVER_NAME'] . (in_array($_SERVER['SERVER_PORT'],
                 array(80, 443)) ? '' : ':' . $_SERVER['SERVER_PORT']) . $_SERVER['SCRIPT_NAME'];
@@ -32,7 +32,7 @@ class imBot
                         'PERSONAL_PHOTO'    => ''
                     ]
             ],
-            $_REQUEST["auth"]);
+            $request["auth"]);
 
         return $result;
     }
