@@ -3,18 +3,20 @@
 class imBot
 {
 
-    public function __construct(){
+    public $request = [];
 
+    public function __construct($params){
+        $this->request = $params;
     }
 
-    public function installApp(array $request = []){
+    public function installApp(){
 
         $backUrl = ($_SERVER['SERVER_PORT'] == 443 ? 'https' : 'http') . '://' . $_SERVER['SERVER_NAME'] . (in_array($_SERVER['SERVER_PORT'],
                 array(80, 443)) ? '' : ':' . $_SERVER['SERVER_PORT']) . $_SERVER['SCRIPT_NAME'];
 
         $result = $this->sendRequest('imbot.register',
             [
-                'CODE'                  => 'imNameBot',
+                'CODE'                  => 'imCityBot',
                 'TYPE'                  => 'B',
                 'EVENT_MESSAGE_ADD'     => $backUrl,
                 'EVENT_WELCOME_MESSAGE' => $backUrl,
@@ -26,16 +28,28 @@ class imBot
                         'COLOR'             => 'GREEN',
                         'EMAIL'             => 'madd.niko@gmail.com',
                         'PERSONAL_BIRTHDAY' => '2018-06-13',
-                        'WORK_POSITION'     => 'Узнаю имена',
+                        'WORK_POSITION'     => 'Узнаю город',
                         'PERSONAL_WWW'      => '',
                         'PERSONAL_GENDER'   => 'M',
                         'PERSONAL_PHOTO'    => ''
                     ]
             ],
-            $request["auth"]);
+            $this->request["auth"]);
 
         return $result;
     }
+
+    public function joinChat(){
+
+        $result = $this->sendRequest('imbot.message.add', array(
+            'BOT_ID'    => $this->request['data']['PARAMS']['BOT_ID'],
+            'DIALOG_ID' => $this->request['data']['PARAMS']['DIALOG_ID'],
+            'MESSAGE'   => 'Привет! Я Узнавака, напишите название города.'
+        ), $this->request['auth']);
+
+        return $result;
+    }
+
 
     public function sendRequest(string $method, array $params = [], array $auth = []) : string
     {
@@ -54,4 +68,8 @@ class imBot
         $result = json_decode($result, 1);
         return $result;
     }
+
+
+
+
 }
