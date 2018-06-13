@@ -1,6 +1,7 @@
 <?php
 
 define('ROOT',$_SERVER['DOCUMENT_ROOT']);
+define('GEO_API_KEY','udY7yWi50yDbYqCm0R3Bhw1DWiyqmtUO');
 
 
 function __autoload($className) {
