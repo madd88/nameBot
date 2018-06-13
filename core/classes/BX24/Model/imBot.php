@@ -17,7 +17,6 @@ class imBot
     public function __construct($request)
     {
         $this->request = $request;
-        file_put_contents($_SERVER['DOCUMENT_ROOT'] . "/log.txt", json_encode($this->request) . "-class\r\n", FILE_APPEND);
     }
 
     /**
@@ -58,6 +57,9 @@ class imBot
 
     /**
      * Выводит сообщение при соединении к чату
+     *
+     * @param string $message Приветственное сообщение
+     *
      */
 //'Привет! Я Узнавака, напишите название своего города.'
     public function joinChat(string $message = '')
@@ -131,10 +133,10 @@ class imBot
      *
      * @param string $cName Название города
      *
-     * @return string
+     * @return bool
      */
 
-    public function getCity($cName): string
+    public function getCity($cName): bool
     {
         $url = 'http://geohelper.info/api/v1/cities?&apiKey=' . GEO_API_KEY . '&locale[lang]=ru&filter[name]=' . $cName;
         $cities = json_decode(file_get_contents($url));

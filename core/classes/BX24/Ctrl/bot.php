@@ -1,7 +1,10 @@
 <?php
 
-namespace BX24\Ctrl;
+/**
+ * Класс обрабатывающий события для бота
+ */
 
+namespace BX24\Ctrl;
 
 class bot extends \BX24\Ctrl\ctrl
 {

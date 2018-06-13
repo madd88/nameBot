@@ -2,10 +2,20 @@
 
 include_once ROOT . "/core/traits/common.php";
 
+
+/**
+ * Запускаем начальный метод sendRequest()
+ */
+
+
 class app
 {
 
-      static function init($request)
+    /**
+     * @param array $request $_REQUEST
+     */
+
+    static function init($request)
     {
 
         $controllerName = '\BX24\Ctrl\bot';
