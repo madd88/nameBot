@@ -1,7 +1,10 @@
 <?php
 
+namespace BX24\Model;
+
 /**
- * Simple Bot ask users city name
+ * Бот для открытых линий
+ * Основная функция задать вопрос в чате
  * @author  Nikolaev Aleksei
  * @version 1.0
  * @access  public
@@ -11,24 +14,25 @@ class imBot
 
     public $request = [];
 
-    public function __construct($params)
+    public function __construct($request)
     {
-        $this->request = $params;
+        $this->request = $request;
+        file_put_contents($_SERVER['DOCUMENT_ROOT'] . "/log.txt", json_encode($this->request) . "-class\r\n", FILE_APPEND);
     }
 
     /**
-     * Settings for installation on bitrix24
+     * Установка приложения в Битрикс24
      */
 
     public function installApp()
     {
 
         $backUrl = ($_SERVER['SERVER_PORT'] == 443 ? 'https' : 'http') . '://' . $_SERVER['SERVER_NAME'] . (in_array($_SERVER['SERVER_PORT'],
-                [80, 443]) ? '' : ':' . $_SERVER['SERVER_PORT']) . $_SERVER['SCRIPT_NAME'];
+                array(80, 443)) ? '' : ':' . $_SERVER['SERVER_PORT']) . $_SERVER['SCRIPT_NAME'];
 
         $this->sendRequest('imbot.register',
             [
-                'CODE'                  => 'imCityBot',
+                'CODE'                  => 'imCityBot2',
                 'TYPE'                  => 'O',
                 'EVENT_MESSAGE_ADD'     => $backUrl,
                 'EVENT_WELCOME_MESSAGE' => $backUrl,
@@ -47,25 +51,30 @@ class imBot
                     ]
             ],
             $this->request["auth"]);
+
+
     }
 
 
     /**
-     * Show message when user join the chat
+     * Выводит сообщение при соединении к чату
      */
-
-    public function joinChat()
+//'Привет! Я Узнавака, напишите название своего города.'
+    public function joinChat(string $message = '')
     {
         $this->sendRequest('imbot.message.add', [
             'BOT_ID'    => $this->request['data']['PARAMS']['BOT_ID'],
             'DIALOG_ID' => $this->request['data']['PARAMS']['DIALOG_ID'],
-            'MESSAGE'   => 'Привет! Я Узнавака, напишите название своего города.'
+            'MESSAGE'   => $message
         ], $this->request['auth']);
+
+        file_put_contents($_SERVER['DOCUMENT_ROOT'] . "/log.txt", json_encode($this->request) . "-join\r\n", FILE_APPEND);
+
     }
 
 
     /**
-     * Show message when user enters his message
+     * Ответ на сообщение пользователю
      */
     public function sendAnswer()
     {
@@ -89,15 +98,15 @@ class imBot
     }
 
     /**
-     * Create and send request to bitrix24
+     * Отправка запроса в Bitrix24
      *
-     * @param string $method bitrix24 api method
-     * @param array  $params parameters for api request. Every method has his own parameters
-     * @param array  $auth   bitrix24 api auth array. From $_REQUEST['auth']
+     * @param string $method имя метода
+     * @param array  $params список параметров запроса
+     * @param array  $auth   bitrix24 массив аутентификации
      *
      * @return string
      */
-    public function sendRequest(string $method, array $params = [], array $auth = []): string
+    public function sendRequest(string $method, array $params = [], array $auth = [])
     {
         $URL = 'https://' . $auth['domain'] . '/rest/' . $method;
         $queryParams = http_build_query(array_merge($params, ['auth' => $auth['access_token']]));
@@ -111,15 +120,16 @@ class imBot
         ]);
         $result = curl_exec($curl);
         curl_close($curl);
+
         $result = json_decode($result, 1);
 
         return $result;
     }
 
     /**
-     * Get city list by name or a part of name
+     * Получаем список городов по названию
      *
-     * @param string $cName city name
+     * @param string $cName Название города
      *
      * @return string
      */

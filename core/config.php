@@ -6,7 +6,7 @@ define('GEO_API_KEY','udY7yWi50yDbYqCm0R3Bhw1DWiyqmtUO');
 
 function __autoload($className) {
 
-    $classPath = ROOT . '/core/classes/' . $className . '.class.php';
+    $classPath = ROOT . '/core/classes/' . str_replace('\\', '/', $className) . '.php';
 
     if (file_exists($classPath)){
 
